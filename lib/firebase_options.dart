@@ -42,22 +42,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_ANDROID_API_KEY',
-    appId: 'REPLACE_WITH_ANDROID_APP_ID',
-    messagingSenderId: 'REPLACE_WITH_SENDER_ID',
-    projectId: 'REPLACE_WITH_PROJECT_ID',
-    storageBucket: 'REPLACE_WITH_PROJECT_ID.appspot.com',
+    apiKey: 'AIzaSyBZcz0UgEGT66BKQ9pf1B_cNickEcgclAY',
+    appId: '1:207984520716:android:9ff98b2918e57b11834829',
+    messagingSenderId: '207984520716',
+    projectId: 'quickslot-d9fe6',
+    storageBucket: 'quickslot-d9fe6.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_IOS_API_KEY',
-    appId: 'REPLACE_WITH_IOS_APP_ID',
-    messagingSenderId: 'REPLACE_WITH_SENDER_ID',
-    projectId: 'REPLACE_WITH_PROJECT_ID',
-    storageBucket: 'REPLACE_WITH_PROJECT_ID.appspot.com',
+    apiKey: 'AIzaSyDvAadV-XTUULViCTfp-fb_xoRLZ0tnoy0',
+    appId: '1:207984520716:ios:da9d587b31a02566834829',
+    messagingSenderId: '207984520716',
+    projectId: 'quickslot-d9fe6',
+    storageBucket: 'quickslot-d9fe6.firebasestorage.app',
     iosBundleId: 'com.quickslot.quickslot',
   );
-
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'REPLACE_WITH_WEB_API_KEY',
     appId: 'REPLACE_WITH_WEB_APP_ID',
