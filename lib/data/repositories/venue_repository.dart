@@ -40,29 +40,53 @@ class VenueRepository {
     required DateTime date,
     String? currentUserId,
   }) async {
-    final dayKey = AppDateUtils.dayKey(date);
+    final snapshot = await _dayBookingsQuery(venue.id, date).get();
+    return _buildSlots(
+      venue: venue,
+      date: date,
+      bookedByIndex: _bookedByIndex(snapshot.docs),
+      currentUserId: currentUserId,
+    );
+  }
 
-    final snapshot = await _bookings
-        .where(BookingFields.venueId, isEqualTo: venue.id)
-        .where(BookingFields.dayKey, isEqualTo: dayKey)
-        .get();
+  /// Live slot grid for [venue] on [date]. Emits a new grid whenever a booking
+  /// for that day is created or cancelled, so a slot flips to Booked on other
+  /// devices without a manual refresh.
+  Stream<List<Slot>> watchSlots({
+    required Venue venue,
+    required DateTime date,
+    String? currentUserId,
+  }) {
+    return _dayBookingsQuery(venue.id, date).snapshots().map(
+          (snapshot) => _buildSlots(
+            venue: venue,
+            date: date,
+            bookedByIndex: _bookedByIndex(snapshot.docs),
+            currentUserId: currentUserId,
+          ),
+        );
+  }
 
-    // Only "booked" rows occupy a slot; cancelled ones free it up. Filtering in
-    // memory avoids needing a composite index that also covers `status`.
+  Query<Map<String, dynamic>> _dayBookingsQuery(String venueId, DateTime date) {
+    return _bookings
+        .where(BookingFields.venueId, isEqualTo: venueId)
+        .where(BookingFields.dayKey, isEqualTo: AppDateUtils.dayKey(date));
+  }
+
+  /// Maps booking docs to the slot indexes they occupy. Only "booked" rows
+  /// count; cancelled ones free the slot. Filtering in memory avoids needing a
+  /// composite index that also covers `status`.
+  Map<int, Booking> _bookedByIndex(
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
+  ) {
     final bookedByIndex = <int, Booking>{};
-    for (final doc in snapshot.docs) {
+    for (final doc in docs) {
       final booking = Booking.fromJson(doc.data());
       if (booking.status == BookingStatus.booked) {
         bookedByIndex[booking.slotIndex] = booking;
       }
     }
-
-    return _buildSlots(
-      venue: venue,
-      date: date,
-      bookedByIndex: bookedByIndex,
-      currentUserId: currentUserId,
-    );
+    return bookedByIndex;
   }
 
   List<Slot> _buildSlots({

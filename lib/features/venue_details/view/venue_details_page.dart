@@ -10,10 +10,12 @@ import '../../../shared/widgets/app_loader.dart';
 import '../../../shared/widgets/confirm_dialog.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/success_dialog.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/date_utils.dart';
 import '../providers/slot_provider.dart';
 import '../widgets/date_selector.dart';
 import '../widgets/slot_grid.dart';
+import '../widgets/slot_time_filter_bar.dart';
 
 /// Shows a venue's slot grid for a chosen date. Tapping a free slot books it
 /// transactionally. [currentUserId] is passed from the venue list (which lives
@@ -96,10 +98,28 @@ class _SlotArea extends StatelessWidget {
             message: 'No slots available for this day.',
           );
         }
-        return SlotGrid(
-          slots: provider.slots,
-          bookingSlotIndex: provider.bookingSlotIndex,
-          onSlotTap: (slot) => _onSlotTap(context, slot),
+        final visible = provider.visibleSlots;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: AppSpacing.sm),
+            SlotTimeFilterBar(
+              selected: provider.filter,
+              onChanged: provider.setFilter,
+            ),
+            Expanded(
+              child: visible.isEmpty
+                  ? const EmptyState(
+                      icon: Icons.filter_alt_off_outlined,
+                      message: 'No slots in this time range.',
+                    )
+                  : SlotGrid(
+                      slots: visible,
+                      bookingSlotIndex: provider.bookingSlotIndex,
+                      onSlotTap: (slot) => _onSlotTap(context, slot),
+                    ),
+            ),
+          ],
         );
     }
   }
