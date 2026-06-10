@@ -7,6 +7,7 @@ import '../../../shared/widgets/app_error_view.dart';
 import '../../../shared/widgets/app_loader.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../bookings/view/my_bookings_page.dart';
 import '../../venue_details/view/venue_details_page.dart';
 import '../providers/venue_provider.dart';
 import '../widgets/venue_card.dart';
@@ -31,7 +32,16 @@ class _VenueListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Venues')),
+      appBar: AppBar(
+        title: const Text('Venues'),
+        actions: [
+          IconButton(
+            tooltip: 'My bookings',
+            icon: const Icon(Icons.event_note_outlined),
+            onPressed: () => _openMyBookings(context),
+          ),
+        ],
+      ),
       body: Consumer<VenueProvider>(
         builder: (context, provider, _) {
           switch (provider.state) {
@@ -77,6 +87,16 @@ class _VenueListView extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => VenueDetailsPage(venue: venue, currentUserId: userId),
+      ),
+    );
+  }
+
+  void _openMyBookings(BuildContext context) {
+    final userId = context.read<AuthProvider>().userId;
+    if (userId == null) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MyBookingsPage(userId: userId),
       ),
     );
   }
