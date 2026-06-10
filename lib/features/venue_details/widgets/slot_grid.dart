@@ -5,9 +5,18 @@ import 'slot_tile.dart';
 
 /// Scrollable grid of slot tiles for the selected day.
 class SlotGrid extends StatelessWidget {
-  const SlotGrid({super.key, required this.slots});
+  const SlotGrid({
+    super.key,
+    required this.slots,
+    required this.onSlotTap,
+    this.bookingSlotIndex,
+  });
 
   final List<Slot> slots;
+  final ValueChanged<Slot> onSlotTap;
+
+  /// Index of the slot currently being booked, if any.
+  final int? bookingSlotIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +29,14 @@ class SlotGrid extends StatelessWidget {
         childAspectRatio: 1.5,
       ),
       itemCount: slots.length,
-      itemBuilder: (context, index) => SlotTile(slot: slots[index]),
+      itemBuilder: (context, index) {
+        final slot = slots[index];
+        return SlotTile(
+          slot: slot,
+          isLoading: bookingSlotIndex == slot.slotIndex,
+          onTap: () => onSlotTap(slot),
+        );
+      },
     );
   }
 }

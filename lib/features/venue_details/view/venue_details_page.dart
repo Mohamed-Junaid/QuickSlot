@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../data/models/slot_model.dart';
 import '../../../data/models/venue_model.dart';
+import '../../../data/repositories/booking_repository.dart';
 import '../../../data/repositories/venue_repository.dart';
 import '../../../shared/widgets/app_error_view.dart';
 import '../../../shared/widgets/app_loader.dart';
+import '../../../shared/widgets/confirm_dialog.dart';
 import '../../../shared/widgets/empty_state.dart';
+import '../../../core/utils/date_utils.dart';
 import '../providers/slot_provider.dart';
 import '../widgets/date_selector.dart';
 import '../widgets/slot_grid.dart';
 
-/// Shows a venue's slot grid for a chosen date. Slots are read-only here —
-/// booking comes later. [currentUserId] is passed from the venue list (which
-/// lives under the auth provider) since pushed routes can't read it directly.
+/// Shows a venue's slot grid for a chosen date. Tapping a free slot books it
+/// transactionally. [currentUserId] is passed from the venue list (which lives
+/// under the auth provider) since pushed routes can't read it directly.
 class VenueDetailsPage extends StatelessWidget {
   const VenueDetailsPage({
     super.key,
@@ -26,8 +30,12 @@ class VenueDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) =>
-          SlotProvider(VenueRepository(), venue, currentUserId)..loadSlots(),
+      create: (_) => SlotProvider(
+        VenueRepository(),
+        BookingRepository(),
+        venue,
+        currentUserId,
+      )..loadSlots(),
       child: Scaffold(
         appBar: AppBar(title: Text(venue.name)),
         body: _VenueDetailsView(venue: venue),
@@ -87,7 +95,44 @@ class _SlotArea extends StatelessWidget {
             message: 'No slots available for this day.',
           );
         }
-        return SlotGrid(slots: provider.slots);
+        return SlotGrid(
+          slots: provider.slots,
+          bookingSlotIndex: provider.bookingSlotIndex,
+          onSlotTap: (slot) => _onSlotTap(context, slot),
+        );
+    }
+  }
+
+  Future<void> _onSlotTap(BuildContext context, Slot slot) async {
+    final confirmed = await ConfirmDialog.show(
+      context,
+      title: 'Book slot',
+      message: 'Book ${AppDateUtils.timeLabel(slot.startTime)} - '
+          '${AppDateUtils.timeLabel(slot.endTime)}?',
+      confirmLabel: 'Book',
+    );
+    if (!confirmed || !context.mounted) return;
+
+    final result = await provider.bookSlot(slot);
+    if (!context.mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentSnackBar();
+    messenger.showSnackBar(
+      SnackBar(content: Text(_messageFor(result))),
+    );
+  }
+
+  String _messageFor(BookSlotResult result) {
+    switch (result) {
+      case BookSlotResult.success:
+        return 'Slot booked.';
+      case BookSlotResult.slotTaken:
+        return 'Sorry, this slot was just booked by another user.';
+      case BookSlotResult.notSignedIn:
+        return 'Please sign in to book a slot.';
+      case BookSlotResult.failure:
+        return 'Could not complete booking. Please try again.';
     }
   }
 }
