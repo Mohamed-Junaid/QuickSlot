@@ -47,6 +47,9 @@ dependencies:
   # Date and time formatting (day keys, slot labels)
   intl: ^0.19.0
 
+  # Disk + memory caching for venue images
+  cached_network_image: ^3.4.1
+
   # Immutable models + JSON codegen
   freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0

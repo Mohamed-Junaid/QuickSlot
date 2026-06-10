@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_spacing.dart';
@@ -109,14 +110,12 @@ class _VenueImage extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     return AspectRatio(
       aspectRatio: 16 / 9,
-      child: Image.network(
-        imageUrl,
+      child: CachedNetworkImage(
+        imageUrl: imageUrl,
         fit: BoxFit.cover,
-        loadingBuilder: (context, child, progress) {
-          if (progress == null) return child;
-          return ColoredBox(color: cs.surfaceContainerHighest);
-        },
-        errorBuilder: (context, error, stackTrace) => ColoredBox(
+        placeholder: (context, url) =>
+            ColoredBox(color: cs.surfaceContainerHighest),
+        errorWidget: (context, url, error) => ColoredBox(
           color: cs.surfaceContainerHighest,
           child: Icon(Icons.image_not_supported_outlined,
               color: cs.onSurfaceVariant),
