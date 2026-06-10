@@ -143,8 +143,14 @@ class _HomeView extends StatelessWidget {
     }
   }
 
-  void _push(BuildContext context, Widget page) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
+  /// Pushes [page] and, once it pops, reloads bookings so a slot booked or
+  /// cancelled on the pushed screen is reflected on the dashboard.
+  Future<void> _push(BuildContext context, Widget page) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => page),
+    );
+    if (!context.mounted) return;
+    await context.read<BookingsProvider>().loadBookings();
   }
 }
 
