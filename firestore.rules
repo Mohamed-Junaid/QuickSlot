@@ -58,14 +58,19 @@ service cloud.firestore {
                     && hasBookingShape(request.resource.data)
                     && idMatchesSlot(bookingId, request.resource.data);
 
-      // Update: only the owner, and only to flip status / timestamps; the
-      // immutable identity fields must not change. Re-booking a cancelled slot
-      // (status booked -> cancelled -> booked) is allowed for the owner.
-      allow update: if isOwner(resource.data.userId)
-                    && request.resource.data.venueId == resource.data.venueId
-                    && request.resource.data.dayKey == resource.data.dayKey
-                    && request.resource.data.slotIndex == resource.data.slotIndex
-                    && request.resource.data.userId == resource.data.userId;
+      // Update: the new document must be owned by the caller, be well-formed,
+      // and live at the canonical slot id (so the slot identity can't change).
+      // It is allowed only when EITHER the caller already owns the existing
+      // booking (cancel / modify their own) OR the slot is currently cancelled
+      // (anyone may claim a freed slot). Overwriting someone else's *active*
+      // booking stays forbidden — the no-double-book guard at the rules layer.
+      allow update: if isOwner(request.resource.data.userId)
+                    && hasBookingShape(request.resource.data)
+                    && idMatchesSlot(bookingId, request.resource.data)
+                    && (
+                         resource.data.userId == request.auth.uid
+                         || resource.data.status == 'cancelled'
+                       );
 
       allow delete: if false;
     }
