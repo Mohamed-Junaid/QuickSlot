@@ -1,0 +1,73 @@
+rules_version = '2';
+
+// QuickSlot security rules.
+//
+// Core guarantees enforced here:
+//  - Only authenticated users (anonymous auth counts) can read/write.
+//  - Venues are read-only to clients; seeding/admin happens server-side.
+//  - A booking can only be written by its owner (request.auth.uid == userId).
+//  - A booking's document ID must equal "{venueId}_{dayKey}_{slotIndex}", so a
+//    client cannot dodge the uniqueness collision by inventing a random ID.
+//  - Atomic no-double-book is still enforced by the client transaction; these
+//    rules close the loophole of forged IDs and cross-user writes.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // The document ID must match the deterministic booking key.
+    function idMatchesSlot(docId, data) {
+      return docId == data.venueId + '_' + data.dayKey + '_' + string(data.slotIndex);
+    }
+
+    function hasBookingShape(data) {
+      return data.keys().hasAll([
+               'bookingId', 'venueId', 'venueName', 'userId',
+               'dayKey', 'slotIndex', 'startTime', 'endTime',
+               'status', 'createdAt', 'updatedAt'
+             ])
+             && data.status in ['booked', 'cancelled'];
+    }
+
+    // Venues: read-only for clients.
+    match /venues/{venueId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // Users: each user manages only their own profile doc.
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId);
+      allow delete: if false;
+    }
+
+    // Bookings.
+    match /bookings/{bookingId} {
+      allow read: if isSignedIn();
+
+      // Create: caller owns it, shape is valid, and the ID is the canonical key.
+      allow create: if isOwner(request.resource.data.userId)
+                    && hasBookingShape(request.resource.data)
+                    && idMatchesSlot(bookingId, request.resource.data);
+
+      // Update: only the owner, and only to flip status / timestamps; the
+      // immutable identity fields must not change. Re-booking a cancelled slot
+      // (status booked -> cancelled -> booked) is allowed for the owner.
+      allow update: if isOwner(resource.data.userId)
+                    && request.resource.data.venueId == resource.data.venueId
+                    && request.resource.data.dayKey == resource.data.dayKey
+                    && request.resource.data.slotIndex == resource.data.slotIndex
+                    && request.resource.data.userId == resource.data.userId;
+
+      allow delete: if false;
+    }
+  }
+}

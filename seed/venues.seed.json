@@ -1,0 +1,37 @@
+{
+  "venues": [
+    {
+      "id": "venue_court_a",
+      "name": "Downtown Tennis Court A",
+      "description": "Outdoor hard court with floodlights for evening play.",
+      "address": "12 Riverside Ave, Downtown",
+      "imageUrl": "https://images.unsplash.com/photo-1554068865-24cecd4e34b8",
+      "openHour": 8,
+      "closeHour": 22,
+      "slotDurationMins": 60,
+      "isActive": true
+    },
+    {
+      "id": "venue_studio_b",
+      "name": "Skyline Yoga Studio",
+      "description": "Quiet rooftop studio, mats and props provided.",
+      "address": "5th Floor, 88 Hill Road",
+      "imageUrl": "https://images.unsplash.com/photo-1545205597-3d9d02c29597",
+      "openHour": 9,
+      "closeHour": 20,
+      "slotDurationMins": 45,
+      "isActive": true
+    },
+    {
+      "id": "venue_hall_c",
+      "name": "Maple Badminton Hall",
+      "description": "Indoor wooden-floor court, four lanes available.",
+      "address": "Maple Sports Complex, Gate 3",
+      "imageUrl": "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea",
+      "openHour": 7,
+      "closeHour": 23,
+      "slotDurationMins": 30,
+      "isActive": true
+    }
+  ]
+}
