@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+import 'features/venues/view/venue_list_page.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -18,15 +19,10 @@ class QuickSlotApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'QuickSlot',
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(title: const Text('QuickSlot')),
-        body: const Center(
-          child: Text('Foundation ready. Firebase initialized.'),
-        ),
-      ),
+      home: VenueListPage(),
     );
   }
 }
