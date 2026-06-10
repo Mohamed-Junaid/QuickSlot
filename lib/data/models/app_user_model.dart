@@ -12,6 +12,7 @@ part 'app_user_model.g.dart';
 class AppUser with _$AppUser {
   const factory AppUser({
     required String userId,
+    String? email,
     String? displayName,
     @TimestampConverter() required DateTime createdAt,
   }) = _AppUser;

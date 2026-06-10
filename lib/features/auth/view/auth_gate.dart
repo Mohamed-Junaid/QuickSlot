@@ -1,42 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../data/repositories/auth_repository.dart';
 import '../../../shared/widgets/app_error_view.dart';
-import '../../home/view/home_page.dart';
+import '../../navigation/view/main_navigation.dart';
 import '../../splash/view/splash_view.dart';
 import '../providers/auth_provider.dart';
 
-/// App entry gate. Signs in anonymously, then shows the home dashboard. Until
-/// authenticated, Firestore reads would fail the `isSignedIn()` rule, so the
-/// gate blocks the UI behind sign-in.
+/// Routes based on auth state. The [AuthProvider] is provided at the app root
+/// (see main.dart) so pushed login/register routes can reach it too.
+///
+/// Keying [MainNavigation] by uid recreates its per-user providers when the
+/// signed-in user changes (login switches accounts, logout returns to guest).
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AuthProvider(AuthRepository())..signIn(),
-      child: Consumer<AuthProvider>(
-        builder: (context, auth, _) {
-          switch (auth.status) {
-            case AuthStatus.initial:
-            case AuthStatus.authenticating:
-              return const SplashView();
+    final auth = context.watch<AuthProvider>();
 
-            case AuthStatus.error:
-              return Scaffold(
-                body: AppErrorView(
-                  message: auth.errorMessage ?? 'Could not sign in.',
-                  onRetry: auth.signIn,
-                ),
-              );
+    switch (auth.status) {
+      case AuthStatus.checking:
+        return const SplashView();
 
-            case AuthStatus.authenticated:
-              return const HomePage();
-          }
-        },
-      ),
-    );
+      case AuthStatus.ready:
+        final userId = auth.userId;
+        if (userId == null) {
+          return Scaffold(
+            body: AppErrorView(
+              message: 'Could not start a session.',
+              onRetry: auth.retry,
+            ),
+          );
+        }
+        return MainNavigation(key: ValueKey(userId), userId: userId);
+    }
   }
 }

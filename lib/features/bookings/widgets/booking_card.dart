@@ -4,19 +4,19 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../data/models/booking_model.dart';
 
-/// Card for a single booking: venue, date, slot time, status, and — for active
-/// bookings — a cancel action. [isCancelling] shows a spinner in place of the
-/// button while the cancel transaction runs.
+/// Card for a single booking: venue, date, slot time, status, and — when an
+/// [onCancel] is provided — a cancel action. [isCancelling] shows a spinner in
+/// place of the button while the cancel transaction runs.
 class BookingCard extends StatelessWidget {
   const BookingCard({
     super.key,
     required this.booking,
-    required this.onCancel,
+    this.onCancel,
     this.isCancelling = false,
   });
 
   final Booking booking;
-  final VoidCallback onCancel;
+  final VoidCallback? onCancel;
   final bool isCancelling;
 
   @override
@@ -51,7 +51,8 @@ class BookingCard extends StatelessWidget {
                 ],
               ),
             ),
-            if (isActive) _CancelAction(isCancelling: isCancelling, onCancel: onCancel),
+            if (onCancel != null)
+              _CancelAction(isCancelling: isCancelling, onCancel: onCancel!),
           ],
         ),
       ),

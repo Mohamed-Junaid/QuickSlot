@@ -22,6 +22,7 @@ AppUser _$AppUserFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$AppUser {
   String get userId => throw _privateConstructorUsedError;
+  String? get email => throw _privateConstructorUsedError;
   String? get displayName => throw _privateConstructorUsedError;
   @TimestampConverter()
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -42,6 +43,7 @@ abstract class $AppUserCopyWith<$Res> {
   @useResult
   $Res call({
     String userId,
+    String? email,
     String? displayName,
     @TimestampConverter() DateTime createdAt,
   });
@@ -63,6 +65,7 @@ class _$AppUserCopyWithImpl<$Res, $Val extends AppUser>
   @override
   $Res call({
     Object? userId = null,
+    Object? email = freezed,
     Object? displayName = freezed,
     Object? createdAt = null,
   }) {
@@ -72,6 +75,10 @@ class _$AppUserCopyWithImpl<$Res, $Val extends AppUser>
                 ? _value.userId
                 : userId // ignore: cast_nullable_to_non_nullable
                       as String,
+            email: freezed == email
+                ? _value.email
+                : email // ignore: cast_nullable_to_non_nullable
+                      as String?,
             displayName: freezed == displayName
                 ? _value.displayName
                 : displayName // ignore: cast_nullable_to_non_nullable
@@ -96,6 +103,7 @@ abstract class _$$AppUserImplCopyWith<$Res> implements $AppUserCopyWith<$Res> {
   @useResult
   $Res call({
     String userId,
+    String? email,
     String? displayName,
     @TimestampConverter() DateTime createdAt,
   });
@@ -116,6 +124,7 @@ class __$$AppUserImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? userId = null,
+    Object? email = freezed,
     Object? displayName = freezed,
     Object? createdAt = null,
   }) {
@@ -125,6 +134,10 @@ class __$$AppUserImplCopyWithImpl<$Res>
             ? _value.userId
             : userId // ignore: cast_nullable_to_non_nullable
                   as String,
+        email: freezed == email
+            ? _value.email
+            : email // ignore: cast_nullable_to_non_nullable
+                  as String?,
         displayName: freezed == displayName
             ? _value.displayName
             : displayName // ignore: cast_nullable_to_non_nullable
@@ -143,6 +156,7 @@ class __$$AppUserImplCopyWithImpl<$Res>
 class _$AppUserImpl implements _AppUser {
   const _$AppUserImpl({
     required this.userId,
+    this.email,
     this.displayName,
     @TimestampConverter() required this.createdAt,
   });
@@ -153,6 +167,8 @@ class _$AppUserImpl implements _AppUser {
   @override
   final String userId;
   @override
+  final String? email;
+  @override
   final String? displayName;
   @override
   @TimestampConverter()
@@ -160,7 +176,7 @@ class _$AppUserImpl implements _AppUser {
 
   @override
   String toString() {
-    return 'AppUser(userId: $userId, displayName: $displayName, createdAt: $createdAt)';
+    return 'AppUser(userId: $userId, email: $email, displayName: $displayName, createdAt: $createdAt)';
   }
 
   @override
@@ -169,6 +185,7 @@ class _$AppUserImpl implements _AppUser {
         (other.runtimeType == runtimeType &&
             other is _$AppUserImpl &&
             (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.email, email) || other.email == email) &&
             (identical(other.displayName, displayName) ||
                 other.displayName == displayName) &&
             (identical(other.createdAt, createdAt) ||
@@ -177,7 +194,8 @@ class _$AppUserImpl implements _AppUser {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, userId, displayName, createdAt);
+  int get hashCode =>
+      Object.hash(runtimeType, userId, email, displayName, createdAt);
 
   /// Create a copy of AppUser
   /// with the given fields replaced by the non-null parameter values.
@@ -196,6 +214,7 @@ class _$AppUserImpl implements _AppUser {
 abstract class _AppUser implements AppUser {
   const factory _AppUser({
     required final String userId,
+    final String? email,
     final String? displayName,
     @TimestampConverter() required final DateTime createdAt,
   }) = _$AppUserImpl;
@@ -204,6 +223,8 @@ abstract class _AppUser implements AppUser {
 
   @override
   String get userId;
+  @override
+  String? get email;
   @override
   String? get displayName;
   @override

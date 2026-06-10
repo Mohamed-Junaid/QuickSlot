@@ -47,6 +47,16 @@ class BookingsProvider extends ChangeNotifier {
   Booking? get nextUpcoming =>
       upcomingBookings.isEmpty ? null : upcomingBookings.first;
 
+  /// Everything that isn't an upcoming active booking: past slots and any
+  /// cancelled bookings, newest first.
+  List<Booking> get pastBookings {
+    final now = DateTime.now();
+    return _bookings
+        .where((b) => !(b.status == BookingStatus.booked &&
+            b.startTime.isAfter(now)))
+        .toList();
+  }
+
   /// Count of active (not cancelled) bookings.
   int get activeCount =>
       _bookings.where((b) => b.status == BookingStatus.booked).length;

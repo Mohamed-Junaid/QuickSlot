@@ -16,19 +16,24 @@ QuickSlot lets a signed-in user:
   serialized and only one succeeds.
 - View their bookings and cancel them, which frees the slot for others.
 
-The app uses anonymous Firebase Authentication so there is no sign-up friction —
-every device gets a stable user id that scopes its bookings.
+Authentication uses Firebase Email & Password, with a **guest mode** backed by
+anonymous auth so users can browse and book before creating an account.
+Registering from guest links the email credential to the anonymous user, so a
+guest's existing bookings carry over to their new account.
 
 ---
 
-## 2. Features
-
+- Email/password auth: login, register (with confirm-password), logout, plus a
+  guest mode.
+- Material 3 bottom navigation: Home, My Bookings, Profile.
 - Dashboard home: welcome header, next upcoming booking, quick stats, venue list.
 - Venue list and venue details.
 - Horizontal date picker (next 14 days).
 - Slot grid showing Available vs Booked.
 - Transactional booking with success animation and clear failure feedback.
-- My Bookings with cancellation.
+- My Bookings split into Upcoming and Past, with cancellation.
+- Profile screen adapting to logged-in (account info, stats, logout) vs guest
+  (benefits + login/register).
 - Every screen has explicit loading (shimmer skeletons), error (with retry), and
   empty states — no blank screens.
 - Material 3 design system, pull-to-refresh, reusable components.
@@ -66,23 +71,30 @@ lib/
     theme/                      Colors, spacing, Material 3 theme
     utils/                      Date helpers, JSON converters
 
+  services/
+    firebase/                   AuthService (Firebase services layer)
+
   data/
     models/                     Venue, Slot, Booking, AppUser (+ generated)
-    repositories/               Auth, Venue, Booking repositories
+    repositories/               Auth, User, Venue, Booking repositories
 
   features/
-    auth/                       Anonymous sign-in + auth gate
+    auth/                       Email/password login, register, auth gate
     splash/                     Branded splash view
-    home/                       Dashboard (providers compose here)
+    navigation/                 Bottom-nav shell (shared providers)
+    home/                       Dashboard home tab
     venues/                     Venue list + venue card
     venue_details/              Date picker + slot grid + booking
-    bookings/                   My bookings + cancel
+    bookings/                   My bookings (upcoming/past) + cancel
+    profile/                    Account / guest profile tab
 
   shared/
     widgets/                    Loader, error, empty, shimmer, dialogs, logo
 ```
 
-Each feature owns its `providers/`, `view/`, and `widgets/`.
+Each feature owns its `providers/`, `view/`, and `widgets/`. Repositories depend
+on a Firebase services layer (`services/firebase/`) rather than on Firebase
+types directly.
 
 ---
 
@@ -187,8 +199,9 @@ the slot immediately.
    ```bash
    flutterfire configure
    ```
-4. In the Firebase console: enable **Anonymous Authentication** and create a
-   **Firestore** database.
+4. In the Firebase console → Authentication → Sign-in method, enable both
+   **Email/Password** and **Anonymous** (anonymous backs guest mode), and create
+   a **Firestore** database.
 5. Deploy rules and indexes:
    ```bash
    firebase deploy --only firestore:rules,firestore:indexes
@@ -204,8 +217,11 @@ the slot immediately.
 
 ## 10. Known Limitations
 
-- **Anonymous auth only.** Bookings are tied to a device's anonymous uid; there
-  is no account recovery or cross-device sync.
+- **No password reset / email verification.** Email/password auth is supported,
+  but recovery and verification flows are not implemented.
+- **Slots are derived, so there is no `slots` collection.** The grid is computed
+  from venue hours; this is intentional (single source of truth) but differs
+  from a schema that materializes slot documents.
 - **Reads are one-shot, not streamed.** The slot grid and bookings refresh on
   action / pull-to-refresh rather than live-updating, so another user's booking
   appears on next load (or when you attempt the same slot).
