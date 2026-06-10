@@ -31,6 +31,29 @@ class BookingsProvider extends ChangeNotifier {
   /// The booking currently being cancelled, so its card can show a spinner.
   String? get cancellingBookingId => _cancellingBookingId;
 
+  /// Active (not cancelled) bookings whose slot is still in the future, sorted
+  /// soonest first.
+  List<Booking> get upcomingBookings {
+    final now = DateTime.now();
+    final list = _bookings
+        .where((b) =>
+            b.status == BookingStatus.booked && b.startTime.isAfter(now))
+        .toList()
+      ..sort((a, b) => a.startTime.compareTo(b.startTime));
+    return list;
+  }
+
+  /// The nearest upcoming booking, or null if none.
+  Booking? get nextUpcoming =>
+      upcomingBookings.isEmpty ? null : upcomingBookings.first;
+
+  /// Count of active (not cancelled) bookings.
+  int get activeCount =>
+      _bookings.where((b) => b.status == BookingStatus.booked).length;
+
+  /// Count of active bookings still in the future.
+  int get upcomingCount => upcomingBookings.length;
+
   /// Loads the user's bookings, newest first.
   Future<void> loadBookings() async {
     _state = BookingsViewState.loading;

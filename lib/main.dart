@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+import 'core/theme/app_theme.dart';
 import 'features/auth/view/auth_gate.dart';
 import 'firebase_options.dart';
 
@@ -12,17 +13,17 @@ Future<void> main() async {
   runApp(const QuickSlotApp());
 }
 
-/// Temporary bootstrap shell. Replaced by the real App widget (theme,
-/// providers, router) once feature code is added.
 class QuickSlotApp extends StatelessWidget {
   const QuickSlotApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'QuickSlot',
       debugShowCheckedModeBanner: false,
-      home: AuthGate(),
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      home: const AuthGate(),
     );
   }
 }

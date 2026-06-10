@@ -9,6 +9,7 @@ import '../../../shared/widgets/app_error_view.dart';
 import '../../../shared/widgets/app_loader.dart';
 import '../../../shared/widgets/confirm_dialog.dart';
 import '../../../shared/widgets/empty_state.dart';
+import '../../../shared/widgets/success_dialog.dart';
 import '../../../core/utils/date_utils.dart';
 import '../providers/slot_provider.dart';
 import '../widgets/date_selector.dart';
@@ -116,11 +117,20 @@ class _SlotArea extends StatelessWidget {
     final result = await provider.bookSlot(slot);
     if (!context.mounted) return;
 
-    final messenger = ScaffoldMessenger.of(context);
-    messenger.hideCurrentSnackBar();
-    messenger.showSnackBar(
-      SnackBar(content: Text(_messageFor(result))),
-    );
+    // Success gets the celebratory dialog; everything else is a quick snackbar.
+    if (result == BookSlotResult.success) {
+      await SuccessDialog.show(
+        context,
+        title: 'Booking confirmed',
+        message: 'Your slot at ${AppDateUtils.timeLabel(slot.startTime)} is '
+            'booked. See it in My Bookings.',
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(_messageFor(result))));
   }
 
   String _messageFor(BookSlotResult result) {

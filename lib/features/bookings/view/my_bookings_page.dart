@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/theme/app_spacing.dart';
 import '../../../data/models/booking_model.dart';
 import '../../../data/repositories/booking_repository.dart';
 import '../../../shared/widgets/app_error_view.dart';
-import '../../../shared/widgets/app_loader.dart';
 import '../../../shared/widgets/confirm_dialog.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../providers/bookings_provider.dart';
 import '../widgets/booking_card.dart';
+import '../widgets/booking_card_skeleton.dart';
 
 /// Lists the signed-in user's bookings and lets them cancel. [userId] is passed
 /// in because this route is pushed above the auth provider.
@@ -40,7 +41,16 @@ class _MyBookingsView extends StatelessWidget {
     switch (provider.state) {
       case BookingsViewState.initial:
       case BookingsViewState.loading:
-        return const AppLoader(message: 'Loading your bookings');
+        return ListView(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          children: const [
+            BookingCardSkeleton(),
+            SizedBox(height: AppSpacing.lg),
+            BookingCardSkeleton(),
+            SizedBox(height: AppSpacing.lg),
+            BookingCardSkeleton(),
+          ],
+        );
 
       case BookingsViewState.error:
         return AppErrorView(
@@ -52,14 +62,16 @@ class _MyBookingsView extends StatelessWidget {
         if (provider.isEmpty) {
           return const EmptyState(
             icon: Icons.event_available_outlined,
-            message: 'You have no bookings yet.',
+            title: 'No bookings yet',
+            message: 'Your booked slots will show up here.',
           );
         }
         return RefreshIndicator(
           onRefresh: provider.loadBookings,
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 8),
+          child: ListView.separated(
+            padding: const EdgeInsets.all(AppSpacing.lg),
             itemCount: provider.bookings.length,
+            separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.lg),
             itemBuilder: (context, index) {
               final booking = provider.bookings[index];
               return BookingCard(

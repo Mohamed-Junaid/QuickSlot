@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../data/models/booking_model.dart';
 
@@ -24,9 +25,8 @@ class BookingCard extends StatelessWidget {
     final isActive = booking.status == BookingStatus.booked;
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

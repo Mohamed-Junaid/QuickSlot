@@ -3,11 +3,11 @@ import 'package:provider/provider.dart';
 
 import '../../../data/repositories/auth_repository.dart';
 import '../../../shared/widgets/app_error_view.dart';
-import '../../../shared/widgets/app_loader.dart';
-import '../../venues/view/venue_list_page.dart';
+import '../../home/view/home_page.dart';
+import '../../splash/view/splash_view.dart';
 import '../providers/auth_provider.dart';
 
-/// App entry gate. Signs in anonymously, then shows the venue list. Until
+/// App entry gate. Signs in anonymously, then shows the home dashboard. Until
 /// authenticated, Firestore reads would fail the `isSignedIn()` rule, so the
 /// gate blocks the UI behind sign-in.
 class AuthGate extends StatelessWidget {
@@ -22,9 +22,7 @@ class AuthGate extends StatelessWidget {
           switch (auth.status) {
             case AuthStatus.initial:
             case AuthStatus.authenticating:
-              return const Scaffold(
-                body: AppLoader(message: 'Signing in'),
-              );
+              return const SplashView();
 
             case AuthStatus.error:
               return Scaffold(
@@ -35,7 +33,7 @@ class AuthGate extends StatelessWidget {
               );
 
             case AuthStatus.authenticated:
-              return const VenueListPage();
+              return const HomePage();
           }
         },
       ),

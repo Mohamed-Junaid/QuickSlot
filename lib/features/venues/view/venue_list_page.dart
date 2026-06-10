@@ -1,53 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/theme/app_spacing.dart';
 import '../../../data/models/venue_model.dart';
 import '../../../data/repositories/venue_repository.dart';
 import '../../../shared/widgets/app_error_view.dart';
-import '../../../shared/widgets/app_loader.dart';
 import '../../../shared/widgets/empty_state.dart';
-import '../../auth/providers/auth_provider.dart';
-import '../../bookings/view/my_bookings_page.dart';
 import '../../venue_details/view/venue_details_page.dart';
 import '../providers/venue_provider.dart';
 import '../widgets/venue_card.dart';
+import '../widgets/venue_card_skeleton.dart';
 
-/// Lists all active venues. Owns its [VenueProvider] and renders one of the
-/// loading / error / empty / success states.
+/// Full list of active venues. [userId] is passed in because this route is
+/// pushed above the auth provider.
 class VenueListPage extends StatelessWidget {
-  const VenueListPage({super.key});
+  const VenueListPage({super.key, required this.userId});
+
+  final String userId;
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => VenueProvider(VenueRepository())..loadVenues(),
-      child: const _VenueListView(),
+      child: _VenueListView(userId: userId),
     );
   }
 }
 
 class _VenueListView extends StatelessWidget {
-  const _VenueListView();
+  const _VenueListView({required this.userId});
+
+  final String userId;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Venues'),
-        actions: [
-          IconButton(
-            tooltip: 'My bookings',
-            icon: const Icon(Icons.event_note_outlined),
-            onPressed: () => _openMyBookings(context),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Venues')),
       body: Consumer<VenueProvider>(
         builder: (context, provider, _) {
           switch (provider.state) {
             case VenueViewState.initial:
             case VenueViewState.loading:
-              return const AppLoader(message: 'Loading venues');
+              return ListView(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                children: const [
+                  VenueCardSkeleton(),
+                  SizedBox(height: AppSpacing.lg),
+                  VenueCardSkeleton(),
+                  SizedBox(height: AppSpacing.lg),
+                  VenueCardSkeleton(),
+                ],
+              );
 
             case VenueViewState.error:
               return AppErrorView(
@@ -59,14 +62,17 @@ class _VenueListView extends StatelessWidget {
               if (provider.isEmpty) {
                 return const EmptyState(
                   icon: Icons.storefront_outlined,
-                  message: 'No venues available yet.',
+                  title: 'No venues yet',
+                  message: 'Venues will appear here once they are added.',
                 );
               }
               return RefreshIndicator(
                 onRefresh: provider.loadVenues,
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                child: ListView.separated(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
                   itemCount: provider.venues.length,
+                  separatorBuilder: (_, _) =>
+                      const SizedBox(height: AppSpacing.lg),
                   itemBuilder: (context, index) {
                     final venue = provider.venues[index];
                     return VenueCard(
@@ -83,20 +89,10 @@ class _VenueListView extends StatelessWidget {
   }
 
   void _openDetails(BuildContext context, Venue venue) {
-    final userId = context.read<AuthProvider>().userId;
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => VenueDetailsPage(venue: venue, currentUserId: userId),
-      ),
-    );
-  }
-
-  void _openMyBookings(BuildContext context) {
-    final userId = context.read<AuthProvider>().userId;
-    if (userId == null) return;
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => MyBookingsPage(userId: userId),
+        builder: (_) =>
+            VenueDetailsPage(venue: venue, currentUserId: userId),
       ),
     );
   }
