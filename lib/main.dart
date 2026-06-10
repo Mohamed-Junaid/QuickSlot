@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-import 'features/venues/view/venue_list_page.dart';
+import 'features/auth/view/auth_gate.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -22,7 +22,7 @@ class QuickSlotApp extends StatelessWidget {
     return const MaterialApp(
       title: 'QuickSlot',
       debugShowCheckedModeBanner: false,
-      home: VenueListPage(),
+      home: AuthGate(),
     );
   }
 }

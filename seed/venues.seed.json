@@ -2,7 +2,7 @@
   "venues": [
     {
       "id": "venue_court_a",
-      "name": "Downtown Tennis Court A",
+      "name": "Downtown Tennis Court",
       "description": "Outdoor hard court with floodlights for evening play.",
       "address": "12 Riverside Ave, Downtown",
       "imageUrl": "https://images.unsplash.com/photo-1554068865-24cecd4e34b8",
