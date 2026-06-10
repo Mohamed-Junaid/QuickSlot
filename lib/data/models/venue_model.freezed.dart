@@ -26,8 +26,11 @@ mixin _$Venue {
   String get description => throw _privateConstructorUsedError;
   String get address => throw _privateConstructorUsedError;
   String get imageUrl => throw _privateConstructorUsedError;
+  @IntConverter()
   int get openHour => throw _privateConstructorUsedError;
+  @IntConverter()
   int get closeHour => throw _privateConstructorUsedError;
+  @IntConverter()
   int get slotDurationMins => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
 
@@ -51,9 +54,9 @@ abstract class $VenueCopyWith<$Res> {
     String description,
     String address,
     String imageUrl,
-    int openHour,
-    int closeHour,
-    int slotDurationMins,
+    @IntConverter() int openHour,
+    @IntConverter() int closeHour,
+    @IntConverter() int slotDurationMins,
     bool isActive,
   });
 }
@@ -141,9 +144,9 @@ abstract class _$$VenueImplCopyWith<$Res> implements $VenueCopyWith<$Res> {
     String description,
     String address,
     String imageUrl,
-    int openHour,
-    int closeHour,
-    int slotDurationMins,
+    @IntConverter() int openHour,
+    @IntConverter() int closeHour,
+    @IntConverter() int slotDurationMins,
     bool isActive,
   });
 }
@@ -224,9 +227,9 @@ class _$VenueImpl implements _Venue {
     required this.description,
     required this.address,
     required this.imageUrl,
-    required this.openHour,
-    required this.closeHour,
-    required this.slotDurationMins,
+    @IntConverter() required this.openHour,
+    @IntConverter() required this.closeHour,
+    @IntConverter() required this.slotDurationMins,
     this.isActive = true,
   });
 
@@ -244,10 +247,13 @@ class _$VenueImpl implements _Venue {
   @override
   final String imageUrl;
   @override
+  @IntConverter()
   final int openHour;
   @override
+  @IntConverter()
   final int closeHour;
   @override
+  @IntConverter()
   final int slotDurationMins;
   @override
   @JsonKey()
@@ -316,9 +322,9 @@ abstract class _Venue implements Venue {
     required final String description,
     required final String address,
     required final String imageUrl,
-    required final int openHour,
-    required final int closeHour,
-    required final int slotDurationMins,
+    @IntConverter() required final int openHour,
+    @IntConverter() required final int closeHour,
+    @IntConverter() required final int slotDurationMins,
     final bool isActive,
   }) = _$VenueImpl;
 
@@ -335,10 +341,13 @@ abstract class _Venue implements Venue {
   @override
   String get imageUrl;
   @override
+  @IntConverter()
   int get openHour;
   @override
+  @IntConverter()
   int get closeHour;
   @override
+  @IntConverter()
   int get slotDurationMins;
   @override
   bool get isActive;

@@ -12,21 +12,24 @@ _$VenueImpl _$$VenueImplFromJson(Map<String, dynamic> json) => _$VenueImpl(
   description: json['description'] as String,
   address: json['address'] as String,
   imageUrl: json['imageUrl'] as String,
-  openHour: (json['openHour'] as num).toInt(),
-  closeHour: (json['closeHour'] as num).toInt(),
-  slotDurationMins: (json['slotDurationMins'] as num).toInt(),
+  openHour: const IntConverter().fromJson(json['openHour'] as num),
+  closeHour: const IntConverter().fromJson(json['closeHour'] as num),
+  slotDurationMins: const IntConverter().fromJson(
+    json['slotDurationMins'] as num,
+  ),
   isActive: json['isActive'] as bool? ?? true,
 );
 
-Map<String, dynamic> _$$VenueImplToJson(_$VenueImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'description': instance.description,
-      'address': instance.address,
-      'imageUrl': instance.imageUrl,
-      'openHour': instance.openHour,
-      'closeHour': instance.closeHour,
-      'slotDurationMins': instance.slotDurationMins,
-      'isActive': instance.isActive,
-    };
+Map<String, dynamic> _$$VenueImplToJson(
+  _$VenueImpl instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'name': instance.name,
+  'description': instance.description,
+  'address': instance.address,
+  'imageUrl': instance.imageUrl,
+  'openHour': const IntConverter().toJson(instance.openHour),
+  'closeHour': const IntConverter().toJson(instance.closeHour),
+  'slotDurationMins': const IntConverter().toJson(instance.slotDurationMins),
+  'isActive': instance.isActive,
+};

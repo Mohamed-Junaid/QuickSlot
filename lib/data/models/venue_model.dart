@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../core/utils/num_converters.dart';
+
 part 'venue_model.freezed.dart';
 part 'venue_model.g.dart';
 
@@ -16,9 +18,9 @@ class Venue with _$Venue {
     required String description,
     required String address,
     required String imageUrl,
-    required int openHour,
-    required int closeHour,
-    required int slotDurationMins,
+    @IntConverter() required int openHour,
+    @IntConverter() required int closeHour,
+    @IntConverter() required int slotDurationMins,
     @Default(true) bool isActive,
   }) = _Venue;
 
