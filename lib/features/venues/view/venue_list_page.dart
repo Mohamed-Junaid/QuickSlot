@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../data/models/venue_model.dart';
 import '../../../data/repositories/venue_repository.dart';
 import '../../../shared/widgets/app_error_view.dart';
 import '../../../shared/widgets/app_loader.dart';
 import '../../../shared/widgets/empty_state.dart';
+import '../../auth/providers/auth_provider.dart';
+import '../../venue_details/view/venue_details_page.dart';
 import '../providers/venue_provider.dart';
 import '../widgets/venue_card.dart';
 
@@ -55,12 +58,25 @@ class _VenueListView extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   itemCount: provider.venues.length,
                   itemBuilder: (context, index) {
-                    return VenueCard(venue: provider.venues[index]);
+                    final venue = provider.venues[index];
+                    return VenueCard(
+                      venue: venue,
+                      onTap: () => _openDetails(context, venue),
+                    );
                   },
                 ),
               );
           }
         },
+      ),
+    );
+  }
+
+  void _openDetails(BuildContext context, Venue venue) {
+    final userId = context.read<AuthProvider>().userId;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => VenueDetailsPage(venue: venue, currentUserId: userId),
       ),
     );
   }
